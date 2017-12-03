@@ -34,7 +34,7 @@ RUN $PGHOME/bin/initdb -D $PGDATA
 RUN echo "host all  all    0.0.0.0/0  md5" >> /usr/local/pgsql/data/pg_hba.conf
 RUN echo "listen_addresses='*'" >> /usr/local/pgsql/data/postgresql.conf
 
-VOLUME $PGDATA
+VOLUME /usr/local/pgsql/data/volume
 EXPOSE 5432
 
 RUN /init.sh
