@@ -1,0 +1,6 @@
+#!/bin/bash
+
+docker run -d -P --name gnat_sshd rastasheep/ubuntu-sshd:16.04
+docker port gnat_sshd 22
+ssh root@localhost -p <exposed_port>
+

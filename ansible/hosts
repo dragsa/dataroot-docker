@@ -1,0 +1,6 @@
+[test_hosts]
+localhost ansible_ssh_port=32771
+
+# for apt-get initial start
+[test_hosts:vars]
+ansible_python_interpreter=/usr/bin/python3

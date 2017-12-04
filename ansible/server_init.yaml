@@ -1,0 +1,111 @@
+---
+ 
+- hosts: test_hosts
+  remote_user: root
+  # apt-get looks to be broken as per
+  # https://github.com/ansible/ansible/issues/16884
+  # switch to aptitude for installations
+  pre_tasks:
+    - nmae: 'git update'
+      raw: apt-get update
+    - name: 'install python2'
+      raw: apt-get -y install python-simplejson
+    - name: 'install aptitude'
+      raw: apt-get -y install aptitude
+
+  tasks:
+
+    #install git
+    - name: Install Git
+      apt:
+        name: git
+        state: latest
+
+    #install Javaß
+    # something is wrong and looks like related to OS/Oracle jvm combination
+#     - name: Install java 8 prerequisites
+#       apt:
+#         name: python-software-properties
+#     - name: Add Java 8 repository
+#       apt_repository:
+#         repo: 'ppa:webupd8team/java'
+#         update_cache: yes
+#         #cache_valid_time: 86400
+#     - name: Accept oracle license
+#       debconf:
+#         name: oracle-java8-installer
+#         question: shared/accepted-oracle-license-v1-1
+#         vtype: select
+#         value: true
+#     - name: install java 8
+#       apt:
+#         name: oracle-java8-installer
+#         state: latest
+#         update-cache: yes
+#         force: yes
+
+    # install Open JDK 8 instead
+    - name: Install Java 8
+      apt:
+        name: openjdk-8-jdk
+        state: latest
+        force: yes
+
+    # install SBT
+    # components below are used during SBT abd Docker installation
+    - name: add apt https module
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-curl
+        - software-properties-common
+    - name: add SBT repo
+      apt_repository:
+        repo: deb https://dl.bintray.com/sbt/debian /
+        state: present
+    - name: add SBT repo key
+      apt_key:
+        keyserver: 'hkp://keyserver.ubuntu.com:80'
+        id: '2EE0EA64E40A89B84B2DF73499E82A75642AC823'
+    - name: install SBT
+      apt:
+        name: sbt
+        state: latest
+        update_cache: yes
+
+    # install Docker client
+    - name: add Docker repo
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
+        state: present
+    - name: add Docker repo key
+      apt_key:
+        keyserver: 'https://download.docker.com/linux/ubuntu/gpg'
+        id: '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
+    - name: install Dokcer
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: yes
+
+    # install Docker Deamon
+    # works, but do we really need Docker Deamon?
+#    - name: add Docker Deamon repo
+#      apt_repository:
+#        repo: deb https://packages.docker.com/1.12/apt/repo/ ubuntu-{{ ansible_lsb.codename }} main
+#        state: present
+#    - name: add Docker Deamon repo key
+#      apt_key:
+#        #keyserver: 'https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e'
+#        keyserver: 'hkp://p80.pool.sks-keyservers.net:80'
+#        id: '58118E89F3A912897C070ADBF76221572C52609D'
+#    - name: install Dokcer Deamon
+#      apt:
+#        name: docker-engine
+#        state: latest
+#        update_cache: yes
+#        force: yes

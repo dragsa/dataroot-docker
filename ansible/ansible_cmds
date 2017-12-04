@@ -1,0 +1,3 @@
+ansible -i hosts -k -u root localhost -m ping
+
+ansible-playbook -i hosts -k server_init.yaml
