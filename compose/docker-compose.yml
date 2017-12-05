@@ -4,9 +4,12 @@ services:
     image: nginx
     volumes:
     # cleaner way would be to add new file and mix with default, but it always leads to unbearable pain and endless suffering
+    # replacing default.conf included via nginx.conf by bind
      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    # another bind for static pages
      - ./static/:/usr/share/nginx/html/static/
     ports:
      - "8888:80"
   akka-service:
+    # no ports are externalized as balancer is able to access akka-service via same docker network
     image: dragsasgard/dataroot_hello_akka
