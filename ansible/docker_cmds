@@ -1,6 +1,8 @@
 #!/bin/bash
 
 docker run -d -P --name gnat_sshd rastasheep/ubuntu-sshd:16.04
+# to get exposed port
 docker port gnat_sshd 22
+# to ssh using exposed port
 ssh root@localhost -p <exposed_port>
 
